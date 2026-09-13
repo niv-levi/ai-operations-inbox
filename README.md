@@ -1,4 +1,4 @@
-# AI Operations Inbox
+# AI Operations Inbox — Make Automation
 
 AI-powered request management workflow built in Make that receives business requests, classifies them with OpenAI, routes them to the right team, verifies order data, escalates risky cases, and keeps a human in the loop when needed.
 
