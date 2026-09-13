@@ -1,0 +1,5 @@
+order_number,customer_email,amount,payment_status,order_status,transaction_count
+14256,david@example.com,750,paid,processing,2
+88317,shir@example.com,320,paid,pending,1
+99421,omer@example.com,450,paid,processing,1
+55721,yael@example.com,600,paid,completed,2
