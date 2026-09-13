@@ -55,7 +55,8 @@
       "metadata": {
         "designer": {
           "x": -838,
-          "y": 158
+          "y": 158,
+          "name": "Check Duplicate Request"
         },
         "restore": {
           "parameters": {
@@ -102,7 +103,7 @@
         ]
       },
       "mapper": {
-        "input": "\r\npricing_question\r\nquote_request\r\ndemo_request\r\ndelivery_issue\r\norder_change\r\ncancellation_request\r\n\r\n\r\nINTENT\r\n\r\nDescribe the customer's primary intent using a short machine-friendly value.\r\n\r\nUse lowercase snake_case.\r\n\r\nExamples:\r\n\r\nrequest_refund \r\nreport_duplicate_charge\r\nrequest_quote\r\nreport_bug\r\nchange_order\r\ncancel_service\r\nask_pricing\r\nrequest_support\r\n\r\n\r\nSUMMARY\r\n\r\nCreate a concise summary of the actual request.\r\n\r\nThe summary should:\r\n\r\n- describe the customer's real problem\r\n- preserve important business facts\r\n- include the order number when relevant\r\n- not invent information\r\n\r\n\r\nRECOMMENDED ACTION\r\n\r\nRecommend the next operational action.\r\n\r\nThe recommendation is advisory only.\r\n\r\nDo not assume that any action has already been completed.\r\n\r\n\r\nINCOMING REQUEST\r\n\r\nRequest ID: {{1.request_id}}\r\n\r\nSource: {{1.source}}\r\n\r\nCustomer Name: {{1.customer_name}}\r\n\r\nCustomer Email: {{1.email}}\r\n\r\nSubject: {{1.subject}}\r\n\r\nMessage: {{1.message}}\r\n\r\nReceived At: {{1.received_at}}\r\n\r\n\r\nFINAL INSTRUCTIONS\r\n\r\nAnalyze the incoming request.\r\n\r\nReturn the result according to the configured JSON schema.\r\n\r\nDo not return text outside the structured output.\r\n\r\nDo not return markdown.\r\n\r\nDo not invent missing information.\r\n\r\nIf the incoming request does not contain enough information to classify reliably:\r\n\r\n- lower the confidence score\r\n- set requires_human to true\r\n- explain the missing information in summary or recommended_action",
+        "input": "You are an AI request classification engine for a business operations system.\r\n\r\nYour task is to analyze an incoming customer or operational request and return a structured classification according to the configured JSON schema.\r\n\r\nIMPORTANT RULES\r\n\r\n- Use only information contained in the incoming request.\r\n- Do not invent customer details, order details, payment details, or business facts.\r\n- If important information is missing or unclear, lower the confidence score.\r\n- If the request is ambiguous or involves a risky action, set requires_human to true.\r\n- Return only the structured response required by the configured JSON schema.\r\n- Do not return markdown.\r\n- Do not add explanations outside the structured output.\r\n- Do not add fields that are not part of the schema.\r\n\r\nDEPARTMENTS\r\n\r\nAllowed departments:\r\n\r\nfinance\r\nsupport\r\nsales\r\noperations\r\n\r\nFINANCE\r\n\r\nUse finance for:\r\n\r\n- duplicate charges\r\n- refunds\r\n- invoices\r\n- billing issues\r\n- failed payments\r\n- payment disputes\r\n- incorrect charges\r\n- transaction problems\r\n- payment-related questions\r\n\r\nSUPPORT\r\n\r\nUse support for:\r\n\r\n- technical problems\r\n- login issues\r\n- account access\r\n- bugs\r\n- software problems\r\n- product malfunctions\r\n- troubleshooting\r\n- technical assistance\r\n\r\nSALES\r\n\r\nUse sales for:\r\n\r\n- pricing questions\r\n- quote requests\r\n- demo requests\r\n- product information\r\n- purchasing questions\r\n- sales inquiries\r\n- plan comparisons\r\n- pre-sale questions\r\n\r\nOPERATIONS\r\n\r\nUse operations for:\r\n\r\n- delivery issues\r\n- shipping issues\r\n- order changes\r\n- cancellations\r\n- stock issues\r\n- inventory\r\n- service requests\r\n- fulfillment\r\n- logistics\r\n- other operational requests\r\n\r\nPRIORITY\r\n\r\nAllowed priorities:\r\n\r\nlow\r\nmedium\r\nhigh\r\ncritical\r\n\r\nLOW\r\n\r\nUse low when:\r\n\r\n- the request is informational\r\n- there is no urgency\r\n- there is no meaningful customer or business impact\r\n- the customer is asking a general question\r\n\r\nMEDIUM\r\n\r\nUse medium when:\r\n\r\n- it is a normal support request\r\n- it is a standard operational issue\r\n- it requires attention but is not urgent\r\n- the customer is experiencing a minor problem\r\n\r\nHIGH\r\n\r\nUse high when:\r\n\r\n- there is a payment problem\r\n- there is a duplicate charge\r\n- an order failed\r\n- there is significant customer impact\r\n- there is financial impact\r\n- the customer cannot use an important service\r\n- there is an urgent operational issue\r\n- delay could cause serious customer dissatisfaction\r\n\r\nCRITICAL\r\n\r\nUse critical only when:\r\n\r\n- there is suspected fraud\r\n- there is a security incident\r\n- there is a major service outage\r\n- there is a widespread system failure\r\n- there is severe business impact\r\n- immediate escalation is required\r\n\r\nHUMAN REVIEW\r\n\r\nSet requires_human to true when:\r\n\r\n- money may need to be refunded\r\n- a financial transaction needs verification\r\n- an order needs manual modification\r\n- an account needs manual modification\r\n- there is possible fraud\r\n- there is a security concern\r\n- there are financial, legal, or security consequences\r\n- the request is ambiguous\r\n- confidence is low\r\n- the requested action could significantly affect the customer or business\r\n\r\nSet requires_human to false only when:\r\n\r\n- the request can safely be handled automatically\r\n- no risky or sensitive business action is required\r\n- the classification is sufficiently clear\r\n\r\nCONFIDENCE\r\n\r\nReturn confidence as a number between 0 and 1.\r\n\r\nExamples:\r\n\r\n0.95 = very high confidence\r\n0.85 = high confidence\r\n0.70 = moderate confidence\r\n0.50 = uncertain\r\n0.30 = low confidence\r\n\r\nDo not return high confidence when important information is missing.\r\n\r\nORDER NUMBER\r\n\r\n- Extract the order number if one clearly appears in the request.\r\n- Return it as a string.\r\n- If no order number exists, return null.\r\n- Do not invent an order number.\r\n\r\nSENTIMENT\r\n\r\nAllowed values:\r\n\r\npositive\r\nneutral\r\nnegative\r\n\r\nCATEGORY\r\n\r\nCreate a short machine-friendly category.\r\n\r\nUse lowercase snake_case.\r\n\r\nExamples:\r\n\r\nduplicate_charge\r\nrefund_request\r\ninvoice_issue\r\nfailed_payment\r\nlogin_problem\r\ntechnical_issue\r\nbug_report\r\npricing_question\r\nquote_request\r\ndemo_request\r\ndelivery_issue\r\norder_change\r\ncancellation_request\r\n\r\nINTENT\r\n\r\nDescribe the customer's primary intent using a short machine-friendly value.\r\n\r\nUse lowercase snake_case.\r\n\r\nExamples:\r\n\r\nrequest_refund\r\nreport_duplicate_charge\r\nrequest_quote\r\nreport_bug\r\nchange_order\r\ncancel_service\r\nask_pricing\r\nrequest_support\r\n\r\nSUMMARY\r\n\r\nCreate a concise summary of the actual request.\r\n\r\nThe summary should:\r\n\r\n- describe the customer's real problem\r\n- preserve important business facts\r\n- include the order number when relevant\r\n- not invent information\r\n\r\nRECOMMENDED ACTION\r\n\r\nRecommend the next operational action.\r\n\r\nThe recommendation is advisory only.\r\n\r\nDo not assume that any action has already been completed.\r\n\r\nINCOMING REQUEST\r\n\r\nRequest ID:\r\n{{1.request_id}}\r\n\r\nSource:\r\n{{1.source}}\r\n\r\nCustomer Name:\r\n{{1.customer_name}}\r\n\r\nCustomer Email:\r\n{{1.email}}\r\n\r\nSubject:\r\n{{1.subject}}\r\n\r\nMessage:\r\n{{1.message}}\r\n\r\nReceived At:\r\n{{1.received_at}}\r\n\r\nFINAL INSTRUCTIONS\r\n\r\nAnalyze the incoming request.\r\n\r\nReturn the result according to the configured JSON schema.\r\n\r\nDo not return text outside the structured output.\r\n\r\nDo not return markdown.\r\n\r\nDo not invent missing information.\r\n\r\nIf the incoming request does not contain enough information to classify reliably:\r\n\r\n- lower the confidence score\r\n- set requires_human to true\r\n- explain the missing information in summary or recommended_action",
         "model": "gpt-5.6-luna",
         "store": true,
         "format": {
@@ -122,7 +123,8 @@
       "metadata": {
         "designer": {
           "x": -538,
-          "y": 158
+          "y": 158,
+          "name": "Classify Request"
         },
         "restore": {
           "expect": {
@@ -2659,7 +2661,8 @@
       "metadata": {
         "designer": {
           "x": -238,
-          "y": 158
+          "y": 158,
+          "name": "Parse Classification"
         },
         "restore": {},
         "parameters": [
@@ -2714,7 +2717,8 @@
       "metadata": {
         "designer": {
           "x": 62,
-          "y": 158
+          "y": 158,
+          "name": "Store Request"
         },
         "restore": {
           "expect": {
@@ -2859,7 +2863,8 @@
       "metadata": {
         "designer": {
           "x": 335,
-          "y": 147
+          "y": 147,
+          "name": "Route Request"
         }
       },
       "routes": [
@@ -2877,7 +2882,7 @@
                 "conditions": [
                   [
                     {
-                      "a": "{{4.result.department}}",
+                      "a": "{{7.department}}",
                       "b": "finance",
                       "o": "text:equal"
                     }
@@ -2886,7 +2891,7 @@
               },
               "mapper": {
                 "chatId": "YOUR_TELEGRAM_CHAT_ID",
-                "text": "💰 FINANCE REQUEST\r\n\r\nCustomer:\r\n{{customer_name}}{{1.customer_name}}\r\n\r\nEmail:\r\n{{email}}{{1.email}}\r\n\r\nDepartment:\r\n{{department}}{{4.result.department}}\r\n\r\nCategory:\r\n{{category}}{{4.result.category}}\r\n\r\nPriority:\r\n{{priority}}{{4.result.priority}}\r\n\r\nOrder Number:\r\n{{order_number}}{{4.result.order_number}}\r\n\r\nSummary:\r\n{{summary}}{{4.result.summary}}\r\n\r\nRequires Human:\r\n{{requires_human}}{{4.result.requires_human}}\r\n\r\nRecommended Action:\r\n{{recommended_action}}\r\n\r\nConfidence:\r\n{{confidence}}{{4.result.confidence}}\r\n\r\nRequest ID:\r\n{{request_id}}{{1.request_id}}",
+                "text": "💰 FINANCE REQUEST\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nEmail:\r\n{{1.email}}\r\n\r\nDepartment:\r\n{{7.department}}\r\n\r\nCategory:\r\n{{7.category}}\r\n\r\nPriority:\r\n{{7.priority}}\r\n\r\nOrder Number:\r\n{{7.order_number}}\r\n\r\nSummary:\r\n{{7.summary}}\r\n\r\nRequires Human:\r\n{{7.requires_human}}\r\n\r\nRecommended Action:\r\n{{7.recommended_action}}\r\n\r\nConfidence:\r\n{{7.confidence}}\r\n\r\nRequest ID:\r\n{{1.request_id}}",
                 "messageThreadId": "",
                 "parseMode": "",
                 "replyToMessageId": "",
@@ -3004,11 +3009,11 @@
                 "__IMTCONN__": 0
               },
               "filter": {
-                "name": "support",
+                "name": "Support",
                 "conditions": [
                   [
                     {
-                      "a": "{{4.result.department}}",
+                      "a": "{{7.department}}",
                       "b": "support",
                       "o": "text:equal"
                     }
@@ -3017,7 +3022,7 @@
               },
               "mapper": {
                 "chatId": "YOUR_TELEGRAM_CHAT_ID",
-                "text": "🛠 SUPPORT REQUESTCustomer:\n\n\n\r\n{{customer_name}}{{1.customer_name}}\r\n\r\nEmail:\r\n{{email}}{{1.email}}\r\n\r\nDepartment:\r\n{{department}}{{4.result.department}}\r\n\r\nCategory:\r\n{{category}}{{4.result.category}}\r\n\r\nPriority:\r\n{{priority}}{{4.result.priority}}\r\n\r\nOrder Number:\r\n{{order_number}}{{4.result.order_number}}\r\n\r\nSummary:\r\n{{summary}}{{4.result.summary}}\r\n\r\nRequires Human:\r\n{{requires_human}}{{4.result.requires_human}}\r\n\r\nRecommended Action:\r\n{{recommended_action}}\r\n\r\nConfidence:\r\n{{confidence}}{{4.result.confidence}}\r\n\r\nRequest ID:\r\n{{request_id}}{{1.request_id}}",
+                "text": "🛠 SUPPORT REQUEST\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nEmail:\r\n{{1.email}}\r\n\r\nDepartment:\r\n{{7.department}}\r\n\r\nCategory:\r\n{{7.category}}\r\n\r\nPriority:\r\n{{7.priority}}\r\n\r\nOrder Number:\r\n{{7.order_number}}\r\n\r\nSummary:\r\n{{7.summary}}\r\n\r\nRequires Human:\r\n{{7.requires_human}}\r\n\r\nRecommended Action:\r\n{{7.recommended_action}}\r\n\r\nConfidence:\r\n{{7.confidence}}\r\n\r\nRequest ID:\r\n{{1.request_id}}",
                 "messageThreadId": "",
                 "parseMode": "",
                 "replyToMessageId": "",
@@ -3135,11 +3140,11 @@
                 "__IMTCONN__": 0
               },
               "filter": {
-                "name": "sales",
+                "name": "Sales",
                 "conditions": [
                   [
                     {
-                      "a": "{{4.result.department}}",
+                      "a": "{{7.department}}",
                       "b": "sales",
                       "o": "text:equal"
                     }
@@ -3148,7 +3153,7 @@
               },
               "mapper": {
                 "chatId": "YOUR_TELEGRAM_CHAT_ID",
-                "text": "💼 SALES REQUESTCustomer:\n\n\n\r\n{{customer_name}}{{1.customer_name}}\r\n\r\nEmail:\r\n{{email}}{{1.email}}\r\n\r\nDepartment:\r\n{{department}}{{4.result.department}}\r\n\r\nCategory:\r\n{{category}}{{4.result.category}}\r\n\r\nPriority:\r\n{{priority}}{{4.result.priority}}\r\n\r\nOrder Number:\r\n{{order_number}}{{4.result.order_number}}\r\n\r\nSummary:\r\n{{summary}}{{4.result.summary}}\r\n\r\nRequires Human:\r\n{{requires_human}}{{4.result.requires_human}}\r\n\r\nRecommended Action:\r\n{{recommended_action}}\r\n\r\nConfidence:\r\n{{confidence}}{{4.result.confidence}}\r\n\r\nRequest ID:\r\n{{request_id}}{{1.request_id}}",
+                "text": "💼 SALES REQUEST\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nEmail:\r\n{{1.email}}\r\n\r\nDepartment:\r\n{{7.department}}\r\n\r\nCategory:\r\n{{7.category}}\r\n\r\nPriority:\r\n{{7.priority}}\r\n\r\nOrder Number:\r\n{{7.order_number}}\r\n\r\nSummary:\r\n{{7.summary}}\r\n\r\nRequires Human:\r\n{{7.requires_human}}\r\n\r\nRecommended Action:\r\n{{7.recommended_action}}\r\n\r\nConfidence:\r\n{{7.confidence}}\r\n\r\nRequest ID:\r\n{{1.request_id}}",
                 "messageThreadId": "",
                 "parseMode": "",
                 "replyToMessageId": "",
@@ -3159,7 +3164,7 @@
                 "designer": {
                   "x": 1233,
                   "y": -671,
-                  "name": " SALES REQUEST"
+                  "name": "Notify Sales"
                 },
                 "restore": {
                   "parameters": {
@@ -3266,11 +3271,11 @@
                 "__IMTCONN__": 0
               },
               "filter": {
-                "name": "operations",
+                "name": "Operations",
                 "conditions": [
                   [
                     {
-                      "a": "{{4.result.department}}",
+                      "a": "{{7.department}}",
                       "b": "operations",
                       "o": "text:equal"
                     }
@@ -3279,7 +3284,7 @@
               },
               "mapper": {
                 "chatId": "YOUR_TELEGRAM_CHAT_ID",
-                "text": "⚙️ OPERATIONS REQUEST\r\n\r\nCustomer:\r\n{{customer_name}}{{1.customer_name}}\r\n\r\nEmail:\r\n{{email}}{{1.email}}\r\n\r\nDepartment:\r\n{{department}}{{4.result.department}}\r\n\r\nCategory:\r\n{{category}}{{4.result.category}}\r\n\r\nPriority:\r\n{{priority}}{{4.result.priority}}\r\n\r\nOrder Number:\r\n{{order_number}}{{4.result.order_number}}\r\n\r\nSummary:\r\n{{summary}}{{4.result.summary}}\r\n\r\nRequires Human:\r\n{{requires_human}}{{4.result.requires_human}}\r\n\r\nRecommended Action:\r\n{{recommended_action}}\r\n\r\nConfidence:\r\n{{confidence}}{{4.result.confidence}}\r\n\r\nRequest ID:\r\n{{request_id}}{{1.request_id}}",
+                "text": "⚙️ OPERATIONS REQUEST\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nEmail:\r\n{{1.email}}\r\n\r\nDepartment:\r\n{{7.department}}\r\n\r\nCategory:\r\n{{7.category}}\r\n\r\nPriority:\r\n{{7.priority}}\r\n\r\nOrder Number:\r\n{{7.order_number}}\r\n\r\nSummary:\r\n{{7.summary}}\r\n\r\nRequires Human:\r\n{{7.requires_human}}\r\n\r\nRecommended Action:\r\n{{7.recommended_action}}\r\n\r\nConfidence:\r\n{{7.confidence}}\r\n\r\nRequest ID:\r\n{{1.request_id}}",
                 "messageThreadId": "",
                 "parseMode": "",
                 "replyToMessageId": "",
@@ -3290,7 +3295,7 @@
                 "designer": {
                   "x": 1233,
                   "y": -371,
-                  "name": " OPERATIONS REQUEST"
+                  "name": "Notify Operations"
                 },
                 "restore": {
                   "parameters": {
@@ -3397,7 +3402,7 @@
                 "__IMTCONN__": 0
               },
               "filter": {
-                "name": "fallback",
+                "name": "Fallback",
                 "conditions": [
                   [
                     {
@@ -3410,7 +3415,7 @@
               },
               "mapper": {
                 "chatId": "YOUR_TELEGRAM_CHAT_ID",
-                "text": "⚠️ UNCLASSIFIED REQUEST\r\n\r\nCustomer:\r\n{{customer_name}}{{1.customer_name}}\r\n\r\nEmail:\r\n{{email}}{{1.email}}\r\n\r\nDepartment:\r\n{{department}}{{4.result.department}}\r\n\r\nCategory:\r\n{{category}}{{4.result.category}}\r\n\r\nPriority:\r\n{{priority}}{{4.result.priority}}\r\n\r\nOrder Number:\r\n{{order_number}}{{4.result.order_number}}\r\n\r\nSummary:\r\n{{summary}}{{4.result.summary}}\r\n\r\nRequires Human:\r\n{{requires_human}}{{4.result.requires_human}}\r\n\r\nRecommended Action:\r\n{{recommended_action}}\r\n\r\nConfidence:\r\n{{confidence}}{{4.result.confidence}}\r\n\r\nRequest ID:\r\n{{request_id}}{{1.request_id}}",
+                "text": "⚠️ UNCLASSIFIED REQUEST\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nEmail:\r\n{{1.email}}\r\n\r\nDepartment:\r\n{{7.department}}\r\n\r\nCategory:\r\n{{7.category}}\r\n\r\nPriority:\r\n{{7.priority}}\r\n\r\nOrder Number:\r\n{{7.order_number}}\r\n\r\nSummary:\r\n{{7.summary}}\r\n\r\nRequires Human:\r\n{{7.requires_human}}\r\n\r\nRecommended Action:\r\n{{7.recommended_action}}\r\n\r\nConfidence:\r\n{{7.confidence}}\r\n\r\nRequest ID:\r\n{{1.request_id}}",
                 "messageThreadId": "",
                 "parseMode": "",
                 "replyToMessageId": "",
@@ -3528,7 +3533,7 @@
                 "__IMTCONN__": 0
               },
               "filter": {
-                "name": "critical Escalation",
+                "name": "Critical Escalation",
                 "conditions": [
                   [
                     {
@@ -3539,7 +3544,7 @@
                   ],
                   [
                     {
-                      "a": "{{4.result.category}}",
+                      "a": "{{7.category}}",
                       "b": "unauthorized_charges",
                       "o": "text:equal"
                     }
@@ -3547,7 +3552,7 @@
                 ]
               },
               "mapper": {
-                "text": "🚨 CRITICAL ESCALATION\r\n\r\nRequest ID:\r\n[request_id]{{1.request_id}}\r\n\r\nCustomer:\r\n[customer_name]{{1.customer_name}}\r\n\r\nDepartment:\r\n[department]{{4.result.department}}\r\n\r\nCategory:\r\n[category]{{4.result.category}}\r\n\r\nPriority:\r\n[priority]{{4.result.priority}}\r\n\r\nSummary:\r\n[summary]{{4.result.summary}}\r\n\r\nRecommended Action:\r\n[recommended_action]{{4.result.recommended_action}}\r\n\r\nRequires Human:\r\n[requires_human]{{4.result.requires_human}}\r\n\r\n⚠️ Immediate manager review required.",
+                "text": "🚨 CRITICAL ESCALATION\r\n\r\nRequest ID:\r\n{{1.request_id}}\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nDepartment:\r\n{{7.department}}\r\n\r\nCategory:\r\n{{7.category}}\r\n\r\nPriority:\r\n{{7.priority}}\r\n\r\nSummary:\r\n{{7.summary}}\r\n\r\nRecommended Action:\r\n{{7.recommended_action}}\r\n\r\nRequires Human:\r\n{{7.requires_human}}\r\n\r\n⚠️ Immediate manager review required.",
                 "chatId": "YOUR_TELEGRAM_CHAT_ID",
                 "parseMode": "",
                 "replyMarkup": "",
@@ -3687,16 +3692,16 @@
                   "email": "{{1.email}}",
                   "subject": "{{1.subject}}",
                   "message": "{{1.message}}",
-                  "department": "{{4.result.department}}",
-                  "category": "{{4.result.category}}",
-                  "priority": "{{4.result.priority}}",
-                  "intent": "{{4.result.intent}}",
-                  "sentiment": "{{4.result.sentiment}}",
+                  "department": "{{7.department}}",
+                  "category": "{{7.category}}",
+                  "priority": "{{7.priority}}",
+                  "intent": "{{7.intent}}",
+                  "sentiment": "{{7.sentiment}}",
                   "order_number": "{{7.order_number}}",
-                  "summary": "{{4.result.summary}}",
-                  "requires_human": "{{4.result.requires_human}}",
-                  "recommended_action": "{{4.result.recommended_action}}",
-                  "confidence": "{{4.result.confidence}}",
+                  "summary": "{{7.summary}}",
+                  "requires_human": "{{7.requires_human}}",
+                  "recommended_action": "{{7.recommended_action}}",
+                  "confidence": "{{7.confidence}}",
                   "status": "needs_review",
                   "assigned_to": "",
                   "received_at": "{{1.received_at}}"
@@ -3862,21 +3867,22 @@
                 "__IMTCONN__": 0
               },
               "filter": {
-                "name": "customer Acknowledgement",
+                "name": "Customer Acknowledgement",
                 "conditions": []
               },
               "mapper": {
                 "to": [
                   "{{1.email}}"
                 ],
-                "content": "Hello,\r\n\r\nThank you for contacting us.\r\n\r\nWe have received your request and it has been successfully added to our system.\r\n\r\nRequest ID:{{1.request_id}}\r\n\r\nCustomer:{{1.customer_name}}\r\n\r\nDepartment:{{4.result.department}}\r\n\r\nCategory:{{4.result.category}}\r\n\r\nPriority:{{4.result.priority}}\r\n\r\nSummary:{{4.result.summary}}\r\n\r\nCurrent Status:\r\nYour request is currently being reviewed by the relevant team.\r\n\r\nIf additional information is required, a team member will contact you.\r\n\r\nThank you,\r\nCustomer Operations Team",
-                "subject": "We received your request -{{1.request_id}}",
+                "content": "Hello,\r\n\r\nThank you for contacting us.\r\n\r\nWe have received your request and it has been added to our system.\r\n\r\nRequest ID: {{1.request_id}}\r\nCustomer: {{1.customer_name}}\r\nDepartment: {{7.department}}\r\nCategory: {{7.category}}\r\nPriority: {{7.priority}}\r\n\r\nSummary:\r\n{{7.summary}}\r\n\r\nCurrent Status:\r\nYour request is being reviewed by the relevant team.\r\n\r\nIf additional information is required, a team member will contact you.\r\n\r\nThank you,\r\nCustomer Operations Team",
+                "subject": "We received your request - {{1.request_id}}",
                 "bodyType": "rawHtml"
               },
               "metadata": {
                 "designer": {
                   "x": 1233,
-                  "y": 829
+                  "y": 829,
+                  "name": "Send Customer Acknowledgement"
                 },
                 "restore": {
                   "expect": {
@@ -4074,7 +4080,8 @@
               "metadata": {
                 "designer": {
                   "x": 854,
-                  "y": 1392
+                  "y": 1392,
+                  "name": "Find Order"
                 },
                 "restore": {
                   "expect": {
@@ -4798,7 +4805,8 @@
               "metadata": {
                 "designer": {
                   "x": 1154,
-                  "y": 1392
+                  "y": 1392,
+                  "name": "Verify Payment"
                 }
               },
               "routes": [
@@ -4816,6 +4824,11 @@
                         "conditions": [
                           [
                             {
+                              "a": "{{7.department}}",
+                              "b": "finance",
+                              "o": "text:equal"
+                            },
+                            {
                               "a": "{{28.`5`}}",
                               "b": "1",
                               "o": "number:greater"
@@ -4825,7 +4838,7 @@
                       },
                       "mapper": {
                         "chatId": "YOUR_TELEGRAM_CHAT_ID",
-                        "text": "🚨 VERIFIED PAYMENT ANOMALY\r\n\r\nRequest ID:\r\n{{1.request_id}}\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nOrder Number:\r\n{{28.`0`}}\r\n\r\nOrder Amount:\r\n{{28.`2`}}\r\n\r\nPayment Status:\r\n{{28.`3`}}\r\n\r\nOrder Status:\r\n{{28.`4`}}\r\n\r\nTransaction Count:\r\n {{28.`5`}} \r\n\r\nCustomer Request:\r\n{{7.summary}}\r\n\r\n⚠️ The order data indicates more than one transaction for this order.\r\n\r\nHuman review is required before any refund or financial action.",
+                        "text": "🚨 VERIFIED PAYMENT ANOMALY\r\n\r\nRequest ID:\r\n{{1.request_id}}\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nOrder Number:\r\n{{28.`0`}}\r\n\r\nOrder Amount:\r\n{{28.`2`}}\r\n\r\nPayment Status:\r\n{{28.`3`}}\r\n\r\nOrder Status:\r\n{{28.`4`}}\r\n\r\nTransaction Count:\r\n{{28.`5`}}\r\n\r\nCustomer Request:\r\n{{7.summary}}\r\n\r\n⚠️ The order data indicates more than one transaction for this order.\r\n\r\nHuman review is required before any refund or financial action.",
                         "messageThreadId": "",
                         "parseMode": "",
                         "replyToMessageId": "",
@@ -4947,6 +4960,11 @@
                         "conditions": [
                           [
                             {
+                              "a": "{{7.department}}",
+                              "b": "finance",
+                              "o": "text:equal"
+                            },
+                            {
                               "a": "{{28.`5`}}",
                               "b": "1",
                               "o": "number:lessorequal"
@@ -4956,7 +4974,7 @@
                       },
                       "mapper": {
                         "chatId": "YOUR_TELEGRAM_CHAT_ID",
-                        "text": "🟡 PAYMENT CLAIM REQUIRES MANUAL VERIFICATION\r\n\r\nRequest ID:\r\n{{1.request_id}}\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nOrder Number:\r\n\r\n{{28.`0`}}  \r\nOrder Amount:\n\r\n {{28.`2`}}\r\n\r\nPayment Status:\r\n{{28.`3`}}\r\n\r\nOrder Status:\r\n {{28.`4`}}\r\n\r\nTransaction Count:\r\n{{28.`5`}}\r\n\r\nCustomer Request:\r\n {{4.result.summary}}\r\n\r\nThe customer reported a payment issue, but the current order data does not confirm multiple transactions.\r\n\r\nPlease manually verify the payment provider or transaction history before taking any financial action.",
+                        "text": "🟡 PAYMENT CLAIM REQUIRES MANUAL VERIFICATION\r\n\r\nRequest ID:\r\n{{1.request_id}}\r\n\r\nCustomer:\r\n{{1.customer_name}}\r\n\r\nOrder Number:\r\n{{28.`0`}}\r\n\r\nOrder Amount:\r\n{{28.`2`}}\r\n\r\nPayment Status:\r\n{{28.`3`}}\r\n\r\nOrder Status:\r\n{{28.`4`}}\r\n\r\nTransaction Count:\r\n{{28.`5`}}\r\n\r\nCustomer Request:\r\n{{7.summary}}\r\n\r\nThe customer reported a payment issue, but the current order data does not confirm multiple transactions.\r\n\r\nPlease manually verify the payment provider or transaction history before taking any financial action.",
                         "messageThreadId": "",
                         "parseMode": "",
                         "replyToMessageId": "",
