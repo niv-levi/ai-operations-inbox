@@ -156,12 +156,13 @@ Finance route
 │   ├── architecture.md
 │   ├── business-rules.md
 │   └── test-cases.md
+├── make/
+│   ├── README.md
+│   └── scenario-blueprint.json
 ├── prompts/
 │   └── request-classification.md
 ├── sample-data/
 │   └── orders.csv
-├── make/
-│   └── README.md
 └── screenshots/
     ├── full-scenario.png
     └── orders-database.png
