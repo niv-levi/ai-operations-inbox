@@ -1,5 +1,13 @@
+# Secrets and local configuration
 .env
 .env.*
 *.local
+credentials.json
+token.json
+
+# Dependencies
+node_modules/
+
+# OS files
 .DS_Store
 Thumbs.db
