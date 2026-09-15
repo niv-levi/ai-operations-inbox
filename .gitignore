@@ -1,13 +1,13 @@
-# Secrets and local configuration
+# סודות והגדרות מקומיות
 .env
 .env.*
 *.local
 credentials.json
 token.json
 
-# Dependencies
+# תלויות
 node_modules/
 
-# OS files
+# קבצי מערכת הפעלה
 .DS_Store
 Thumbs.db
