@@ -1,23 +1,23 @@
-# Test Cases
+# תרחישי בדיקה
 
-These are the main scenarios used to validate the workflow.
+אלו התרחישים המרכזיים ששימשו לבדיקת ה־Workflow.
 
-| Case | Example | Expected result |
+| מקרה | דוגמה | תוצאה צפויה |
 |---|---|---|
-| Duplicate request | Existing `request_id` | Stops before OpenAI |
-| Finance | Duplicate charge / refund request | Finance notification + human review |
-| Support | Login/access problem | Support route |
-| Sales | Pricing or demo request | Sales route |
-| Operations | Delivery/order change | Operations route |
-| Critical | Fraud/security-style request | Department alert + manager escalation |
-| Customer acknowledgement | Request with email | Gmail acknowledgement |
-| Verified anomaly | Order with `transaction_count > 1` | Verified anomaly notification |
-| Manual verification | Order with `transaction_count <= 1` | Manual verification notification |
-| Unknown department | Unexpected model output | Fallback/Admin route |
+| פנייה כפולה | `request_id` שכבר קיים | נעצר לפני OpenAI |
+| כספים | חיוב כפול / בקשת החזר | התראה לכספים + בדיקה אנושית |
+| תמיכה | בעיית התחברות או גישה | Route של תמיכה |
+| מכירות | בקשת מחיר או Demo | Route של מכירות |
+| תפעול | שינוי במשלוח או בהזמנה | Route של תפעול |
+| קריטי | פנייה בסגנון הונאה או אבטחה | התראה למחלקה + הסלמה למנהל |
+| אישור קבלה ללקוח | פנייה הכוללת Email | הודעת אישור דרך Gmail |
+| חריגה מאומתת | הזמנה עם `transaction_count > 1` | התראה על חריגה מאומתת |
+| בדיקה ידנית | הזמנה עם `transaction_count <= 1` | התראה לבדיקת ידנית |
+| מחלקה לא מוכרת | פלט לא צפוי מהמודל | Route מסוג Fallback / Admin |
 
-## Example: duplicate charge
+## דוגמה: חיוב כפול
 
-Input:
+קלט:
 
 ```json
 {
@@ -25,18 +25,18 @@ Input:
   "source": "website",
   "customer_name": "David Cohen",
   "email": "david@example.com",
-  "subject": "Duplicate charge",
-  "message": "I was charged twice for order 14256 and I want a refund.",
+  "subject": "חיוב כפול",
+  "message": "חויבתי פעמיים עבור הזמנה 14256 ואני רוצה החזר כספי.",
   "received_at": "2026-09-13T23:10:00+03:00"
 }
 ```
 
-Expected results:
+תוצאות צפויות:
 
-- OpenAI extracts `department = finance` and `order_number = 14256`.
-- Request is stored once.
-- Finance route runs.
-- Human review is required.
-- Customer acknowledgement is sent.
-- Order lookup finds `transaction_count = 2`.
-- Verified payment anomaly route runs.
+- OpenAI מחלץ `department = finance` ואת `order_number = 14256`.
+- הפנייה נשמרת פעם אחת בלבד.
+- Route של כספים מופעל.
+- נדרשת בדיקה אנושית.
+- נשלחת ללקוח הודעת אישור קבלה.
+- חיפוש ההזמנה מוצא `transaction_count = 2`.
+- Route של חריגת תשלום מאומתת מופעל.
