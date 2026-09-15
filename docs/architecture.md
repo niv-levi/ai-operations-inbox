@@ -1,36 +1,36 @@
-# Architecture
+# ארכיטקטורה
 
-## Main scenario
+## התרחיש הראשי
 
-The main Make scenario handles the request lifecycle from intake to routing and verification.
+תרחיש Make הראשי מטפל במחזור החיים של הפנייה, משלב הקליטה ועד לניתוב ולאימות.
 
 ```text
 Custom Webhook
-  -> Duplicate Check
+  -> בדיקת כפילויות
   -> OpenAI
   -> Parse JSON
   -> Make Data Store
-  -> Main Router
+  -> Router ראשי
 ```
 
-### 1. Intake
-A custom webhook receives a normalized request payload containing a request ID, source, customer details, subject, message and timestamp.
+### 1. קליטת הפנייה
+Custom Webhook מקבל Payload מנורמל של הפנייה, הכולל מזהה פנייה, מקור, פרטי לקוח, נושא, הודעה וחותמת זמן.
 
 ### 2. Idempotency
-The request ID is checked against a Make Data Store before the OpenAI call. Existing IDs are stopped early so repeated deliveries do not create duplicate tickets or consume additional AI calls.
+מזהה הפנייה נבדק מול Make Data Store לפני הקריאה ל־OpenAI. מזהים שכבר קיימים נעצרים בשלב מוקדם, כך ששליחות חוזרות אינן יוצרות Tickets כפולים ואינן צורכות קריאות AI נוספות.
 
-### 3. AI classification
-OpenAI returns a strict structured object with the operational fields required by the workflow.
+### 3. סיווג AI
+OpenAI מחזיר Object מובנה וקפדני עם השדות התפעוליים שה־Workflow צריך.
 
-### 4. Persistence
-The request is stored in a Make Data Store with a unique key based on `request_id`.
+### 4. שמירת נתונים
+הפנייה נשמרת ב־Make Data Store עם מפתח ייחודי המבוסס על `request_id`.
 
-### 5. Business routing
-A Make Router sends the request through one or more deterministic branches. A request can belong to Finance and, at the same time, trigger Human Review or Critical Escalation.
+### 5. ניתוב עסקי
+Make Router מעביר את הפנייה דרך Branch אחד או יותר לפי כללים דטרמיניסטיים. פנייה יכולה להשתייך למחלקת כספים ובמקביל להפעיל בדיקה אנושית או הסלמה קריטית.
 
-### 6. Order verification
-When an order number is available, Make searches Google Sheets for the related order and evaluates transaction data using deterministic rules.
+### 6. אימות הזמנה
+כאשר קיים מספר הזמנה, Make מחפש את ההזמנה הרלוונטית ב־Google Sheets ובוחן את נתוני העסקה באמצעות כללים דטרמיניסטיים.
 
-## Why the architecture is split this way
+## למה הארכיטקטורה בנויה כך
 
-The model is responsible for language understanding. Make is responsible for operational decisions. This avoids giving the LLM direct authority over sensitive actions and makes the system easier to audit.
+המודל אחראי על הבנת השפה. Make אחראי על ההחלטות התפעוליות. כך ה־LLM אינו מקבל סמכות ישירה לבצע פעולות רגישות, והמערכת נשארת קלה יותר לביקורת.
