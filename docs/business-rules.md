@@ -1,57 +1,57 @@
-# Business Rules
+# כללים עסקיים
 
-## Department routing
+## ניתוב למחלקות
 
-Allowed departments:
+מחלקות מותרות:
 
 - `finance`
 - `support`
 - `sales`
 - `operations`
 
-A fallback route handles unexpected values.
+Route מסוג Fallback מטפל בערכים לא צפויים.
 
-## Priority
+## עדיפות
 
-Allowed priorities:
+ערכי עדיפות מותרים:
 
 - `low`
 - `medium`
 - `high`
 - `critical`
 
-Critical requests trigger a separate manager escalation route.
+פניות ברמת `critical` מפעילות Route נפרד להסלמה למנהל.
 
-## Human review
+## בדיקה אנושית
 
-`requires_human = true` is used for cases where automation should not make the final decision, including refunds, suspicious payments, sensitive account or order changes, and ambiguous requests.
+`requires_human = true` משמש במקרים שבהם האוטומציה אינה אמורה לקבל את ההחלטה הסופית, כולל החזרים כספיים, תשלומים חשודים, שינויים רגישים בחשבון או בהזמנה ופניות עמומות.
 
-The request status is updated to `needs_review` in the Make Data Store.
+סטטוס הפנייה מתעדכן ל־`needs_review` בתוך Make Data Store.
 
-## Duplicate prevention
+## מניעת כפילויות
 
-The webhook `request_id` is used as the Data Store key. Existing IDs are blocked before the model call.
+ה־`request_id` שמגיע מה־Webhook משמש כמפתח ב־Data Store. מזהים שכבר קיימים נחסמים לפני הקריאה למודל.
 
-## Payment verification
+## אימות תשלום
 
-The workflow does not treat the customer's claim as verified simply because the LLM classified it as a duplicate charge.
+ה־Workflow אינו מתייחס לטענת הלקוח כמאומתת רק משום שה־LLM סיווג אותה כחיוב כפול.
 
-Order data is searched separately. The current demo rule is:
+נתוני ההזמנה נבדקים בנפרד. כלל ההדגמה הנוכחי הוא:
 
 ```text
-transaction_count > 1 -> verified payment anomaly
-transaction_count <= 1 -> manual verification
+transaction_count > 1 -> חריגת תשלום מאומתת
+transaction_count <= 1 -> בדיקה ידנית
 ```
 
-## Escalation
+## הסלמה
 
-Manager escalation can be triggered by:
+הסלמה למנהל יכולה להתרחש כאשר:
 
 - `priority = critical`
-- suspicious payment categories such as unauthorized charges
+- זוהתה קטגוריית תשלום חשודה, לדוגמה חיוב לא מורשה
 
-This rule is intentionally deterministic and does not depend only on the model's priority score.
+הכלל הזה דטרמיניסטי בכוונה ואינו תלוי רק בציון העדיפות שהחזיר המודל.
 
-## Customer communication
+## תקשורת עם הלקוח
 
-A Gmail acknowledgement confirms that the request was received and routed. It does not claim that a refund, cancellation, or other sensitive action has already been completed.
+הודעת אישור דרך Gmail מאשרת שהפנייה התקבלה ונותבה. היא אינה טוענת שהחזר כספי, ביטול או פעולה רגישה אחרת כבר הושלמו.
