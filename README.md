@@ -1,68 +1,68 @@
-# AI Operations Inbox — Make Automation
+# תיבת תפעול חכמה — אוטומציית Make
 
-AI-powered request management workflow built in Make that receives business requests, classifies them with OpenAI, routes them to the right team, verifies order data, escalates risky cases, and keeps a human in the loop when needed.
+Workflow לניהול פניות עסקיות המבוסס על AI ונבנה ב־Make. המערכת מקבלת פניות, מסווגת אותן באמצעות OpenAI, מנתבת אותן לצוות המתאים, מאמתת נתוני הזמנות, מסלימה מקרים מסוכנים ומשאירה אדם בתהליך כאשר נדרש שיקול דעת אנושי.
 
-![Full Make scenario](screenshots/full-scenario.png)
+![תרחיש Make המלא](screenshots/full-scenario.png)
 
-## Why I built it
+## למה בניתי את הפרויקט
 
-Support and operations teams often receive requests from several channels and still rely on a person to read every message, understand the issue, decide who owns it, check the related order, and notify the right team.
+צוותי תמיכה ותפעול מקבלים לעיתים פניות מכמה ערוצים ועדיין תלויים באדם שיקרא כל הודעה, יבין את הבעיה, יחליט מי אחראי לטפל בה, יבדוק את ההזמנה הרלוונטית ויעדכן את הצוות המתאים.
 
-I built this project to automate that first operational layer while keeping business rules outside the LLM and requiring human review for sensitive actions.
+בניתי את הפרויקט כדי להפוך את שכבת התפעול הראשונית הזאת לאוטומטית, תוך השארת הכללים העסקיים מחוץ ל־LLM וחיוב בדיקה אנושית עבור פעולות רגישות.
 
-## What the automation does
+## מה האוטומציה עושה
 
-1. Receives a request through a custom webhook.
-2. Checks the request ID against a Make Data Store to prevent duplicate processing.
-3. Sends new requests to OpenAI for structured classification and extraction.
-4. Parses the structured response into fields Make can use in filters and routes.
-5. Stores the request with operational metadata and status.
-6. Routes the request to Finance, Support, Sales, or Operations.
-7. Sends Telegram alerts to the relevant team.
-8. Escalates critical or suspicious payment cases to a manager.
-9. Marks sensitive cases as `needs_review` for human handling.
-10. Sends an acknowledgement email to the customer through Gmail.
-11. Looks up the extracted order number in Google Sheets.
-12. Verifies payment anomalies against order data instead of trusting the message alone.
+1. מקבלת פנייה דרך Custom Webhook.
+2. בודקת את מזהה הפנייה מול Make Data Store כדי למנוע עיבוד כפול.
+3. שולחת פניות חדשות ל־OpenAI לצורך סיווג מובנה וחילוץ מידע.
+4. מפרקת את התגובה המובנית לשדות שבהם Make יכול להשתמש ב־Filters וב־Routes.
+5. שומרת את הפנייה יחד עם Metadata תפעולי וסטטוס.
+6. מנתבת את הפנייה למחלקת כספים, תמיכה, מכירות או תפעול.
+7. שולחת התראות Telegram לצוות המתאים.
+8. מסלימה למנהל מקרים קריטיים או חשודים הקשורים לתשלום.
+9. מסמנת מקרים רגישים כ־`needs_review` לצורך טיפול אנושי.
+10. שולחת ללקוח הודעת אישור קבלה דרך Gmail.
+11. מחפשת את מספר ההזמנה שחולץ בתוך Google Sheets.
+12. מאמתת חריגות תשלום מול נתוני ההזמנה במקום להסתמך רק על תוכן ההודעה.
 
-## Architecture
+## ארכיטקטורה
 
 ```mermaid
 flowchart TD
-    A[Incoming request] --> B[Custom Webhook]
-    B --> C{Duplicate request?}
-    C -->|Yes| D[Stop processing]
-    C -->|No| E[OpenAI classification]
-    E --> F[Parse structured JSON]
-    F --> G[Save request in Make Data Store]
-    G --> H{Main Router}
+    A[פנייה נכנסת] --> B[Custom Webhook]
+    B --> C{פנייה כפולה?}
+    C -->|כן| D[עצירת העיבוד]
+    C -->|לא| E[סיווג באמצעות OpenAI]
+    E --> F[פענוח JSON מובנה]
+    F --> G[שמירת הפנייה ב־Make Data Store]
+    G --> H{Router ראשי}
 
-    H --> I[Finance]
-    H --> J[Support]
-    H --> K[Sales]
-    H --> L[Operations]
-    H --> M[Critical escalation]
-    H --> N[Human review]
-    H --> O[Customer acknowledgement]
-    H --> P[Order lookup]
+    H --> I[כספים]
+    H --> J[תמיכה]
+    H --> K[מכירות]
+    H --> L[תפעול]
+    H --> M[הסלמה קריטית]
+    H --> N[בדיקה אנושית]
+    H --> O[אישור קבלה ללקוח]
+    H --> P[חיפוש הזמנה]
     H --> Q[Fallback / Admin]
 
     I --> R[Telegram]
     J --> R
     K --> R
     L --> R
-    M --> S[Manager Telegram]
+    M --> S[Telegram למנהל]
     N --> T[status = needs_review]
     O --> U[Gmail]
     P --> V[Google Sheets]
     V --> W{transaction_count > 1?}
-    W -->|Yes| X[Verified payment anomaly]
-    W -->|No| Y[Manual verification]
+    W -->|כן| X[חריגת תשלום מאומתת]
+    W -->|לא| Y[בדיקה ידנית]
 ```
 
-## Structured AI output
+## פלט AI מובנה
 
-The model returns a strict structured response instead of free-form text.
+המודל מחזיר תגובה מובנית וקפדנית במקום טקסט חופשי.
 
 ```json
 {
@@ -72,58 +72,58 @@ The model returns a strict structured response instead of free-form text.
   "intent": "request_refund",
   "sentiment": "negative",
   "order_number": "14256",
-  "summary": "Customer reports being charged twice for order 14256.",
+  "summary": "הלקוח מדווח שחויב פעמיים עבור הזמנה 14256.",
   "requires_human": true,
-  "recommended_action": "Verify the duplicate charge before any refund action.",
+  "recommended_action": "יש לאמת את החיוב הכפול לפני כל פעולה של החזר כספי.",
   "confidence": 0.99
 }
 ```
 
-The LLM is used to understand the request. Make is responsible for routing, escalation, persistence, duplicate handling, and approval logic.
+ה־LLM משמש להבנת הפנייה. Make אחראי על ניתוב, הסלמה, שמירת נתונים, מניעת כפילויות ולוגיקת אישורים.
 
-## Business rules
+## כללים עסקיים
 
-- Duplicate requests are stopped before the OpenAI call to avoid unnecessary processing and cost.
-- Requests are routed by department using deterministic Make filters.
-- Refunds, suspicious payments, account-impacting changes, and ambiguous cases can require human review.
-- Critical requests are escalated to a manager.
-- Suspicious payment categories can also trigger escalation even when the model returns `high` rather than `critical`.
-- A customer message never triggers an automatic refund or other irreversible financial action.
-- Order claims are checked against a separate business-data source before being treated as verified.
+- פניות כפולות נעצרות לפני הקריאה ל־OpenAI כדי למנוע עיבוד ועלות מיותרים.
+- פניות מנותבות לפי מחלקה באמצעות Filters דטרמיניסטיים ב־Make.
+- החזרים כספיים, תשלומים חשודים, שינויים שמשפיעים על חשבון ומקרים עמומים עשויים לחייב בדיקה אנושית.
+- פניות קריטיות עוברות הסלמה למנהל.
+- קטגוריות של תשלום חשוד יכולות להפעיל הסלמה גם כאשר המודל מחזיר `high` ולא `critical`.
+- הודעת לקוח לעולם אינה מפעילה אוטומטית החזר כספי או פעולה פיננסית בלתי הפיכה אחרת.
+- טענות הקשורות להזמנה נבדקות מול מקור נתונים עסקי נפרד לפני שהן נחשבות מאומתות.
 
-## Order verification
+## אימות הזמנות
 
-The order data source is a Google Sheet used as a lightweight demo database.
+מקור נתוני ההזמנות הוא Google Sheet המשמש כ־Database קל משקל לצורכי ההדגמה.
 
-![Order lookup dataset](screenshots/orders-database.png)
+![מאגר נתוני ההזמנות](screenshots/orders-database.png)
 
-Example logic:
+דוגמה ללוגיקה:
 
 ```text
 transaction_count > 1
-=> Verified Payment Anomaly
-=> Finance alert + human review
+=> חריגת תשלום מאומתת
+=> התראה לכספים + בדיקה אנושית
 
 transaction_count <= 1
-=> No Confirmed Payment Anomaly
-=> Manual verification
+=> אין חריגת תשלום מאומתת
+=> בדיקה ידנית
 ```
 
-This keeps factual verification separate from AI interpretation.
+כך האימות העובדתי נשאר נפרד מפרשנות ה־AI.
 
-## Integrations
+## אינטגרציות
 
-| Tool | Purpose |
+| כלי | מטרה |
 |---|---|
-| Make | Workflow orchestration, routers, filters and business logic |
-| OpenAI | Classification, extraction, summarization and confidence scoring |
-| Make Data Store | Request persistence and duplicate prevention |
-| Google Sheets | Order lookup and payment-verification data |
-| Telegram Bot | Department notifications and manager escalation |
-| Gmail | Customer acknowledgement emails |
-| Custom Webhook | Entry point for external requests |
+| Make | Orchestration של ה־Workflow, Routers, Filters ולוגיקה עסקית |
+| OpenAI | סיווג, חילוץ מידע, סיכום וחישוב Confidence |
+| Make Data Store | שמירת פניות ומניעת כפילויות |
+| Google Sheets | חיפוש הזמנות ונתוני אימות תשלום |
+| Telegram Bot | התראות למחלקות והסלמה למנהל |
+| Gmail | הודעות אישור קבלה ללקוח |
+| Custom Webhook | נקודת הכניסה לפניות חיצוניות |
 
-## Example request
+## דוגמה לפנייה
 
 ```json
 {
@@ -131,23 +131,23 @@ This keeps factual verification separate from AI interpretation.
   "source": "website",
   "customer_name": "David Cohen",
   "email": "david@example.com",
-  "subject": "Duplicate charge",
-  "message": "I was charged twice for order 14256 and I want a refund.",
+  "subject": "חיוב כפול",
+  "message": "חויבתי פעמיים עבור הזמנה 14256 ואני רוצה החזר כספי.",
   "received_at": "2026-09-13T23:10:00+03:00"
 }
 ```
 
-Expected behavior:
+התנהגות צפויה:
 
 ```text
-Finance route
-+ Human Review route
-+ Customer acknowledgement
-+ Order lookup
-+ Verified anomaly alert when transaction_count > 1
+Route של כספים
++ Route לבדיקה אנושית
++ אישור קבלה ללקוח
++ חיפוש הזמנה
++ התראת חריגה מאומתת כאשר transaction_count > 1
 ```
 
-## Repository structure
+## מבנה ה־Repository
 
 ```text
 .
@@ -168,27 +168,27 @@ Finance route
     └── orders-database.png
 ```
 
-## Design decisions
+## החלטות תכנון
 
-### Business logic stays outside the LLM
-OpenAI interprets the request, while Make decides what actions are allowed. This keeps the flow easier to audit and safer to change.
+### הלוגיקה העסקית נשארת מחוץ ל־LLM
+OpenAI מפרש את הפנייה, בעוד Make מחליט אילו פעולות מותרות. כך ה־Flow קל יותר לביקורת ובטוח יותר לשינויים.
 
-### Duplicate prevention runs before AI processing
-Repeated webhook deliveries do not create duplicate tickets or unnecessary model calls.
+### מניעת כפילויות מתבצעת לפני עיבוד AI
+שליחות Webhook חוזרות אינן יוצרות Tickets כפולים ואינן גורמות לקריאות Model מיותרות.
 
-### Human-in-the-loop for sensitive actions
-The system can classify, verify and recommend, but it does not automatically perform refunds or other high-impact actions.
+### Human-in-the-loop בפעולות רגישות
+המערכת יכולה לסווג, לאמת ולהמליץ, אך היא אינה מבצעת אוטומטית החזרים כספיים או פעולות אחרות בעלות השפעה גבוהה.
 
-### Claims are verified against business data
-For order-related issues, the workflow checks an external order source before treating the claim as confirmed.
+### טענות מאומתות מול נתונים עסקיים
+בבעיות הקשורות להזמנה, ה־Workflow בודק מקור הזמנות חיצוני לפני שהוא מתייחס לטענה כמאומתת.
 
-## Current scope
+## היקף נוכחי
 
-This is a working portfolio implementation focused on request intake, AI classification, routing, persistence, escalation, customer communication and order verification.
+זהו יישום עובד לתיק עבודות המתמקד בקליטת פניות, סיווג AI, ניתוב, שמירת נתונים, הסלמה, תקשורת עם הלקוח ואימות הזמנות.
 
-Production-oriented improvements I would add next include centralized audit logging, SLA monitoring, retry/error handling, approval workflows, a production ticketing/CRM integration, and operational dashboards.
+שיפורים מוכווני Production שהייתי מוסיף בהמשך כוללים Audit Logging מרכזי, ניטור SLA, מנגנוני Retry ו־Error Handling, תהליכי אישור, חיבור למערכת Tickets או CRM אמיתית ו־Dashboards תפעוליים.
 
-## Notes
+## הערות
 
-- Sample customer and order data is synthetic.
-- The workflow is intentionally Make-first and does not depend on a custom backend.
+- נתוני הלקוחות וההזמנות לדוגמה הם סינתטיים.
+- ה־Workflow בנוי בגישת Make-first ואינו תלוי ב־Backend מותאם אישית.
