@@ -1,20 +1,20 @@
 # Make Blueprint
 
-This folder contains the public Make.com Blueprint for the AI Operations Inbox project.
+התיקייה הזאת מכילה את ה־Blueprint הציבורי של Make.com עבור פרויקט תיבת התפעול החכמה.
 
-The Blueprint committed to this repository is intentionally sanitized for public sharing. It must not contain real API keys, bot tokens, webhook URLs, private chat IDs, spreadsheet IDs, OAuth credentials, or personal connection identifiers.
+ה־Blueprint שנשמר ב־Repository עבר Sanitization בכוונה לפני פרסום ציבורי. הוא לא אמור לכלול API Keys אמיתיים, Bot Tokens, כתובות Webhook, מזהי Chat פרטיים, מזהי Spreadsheet, פרטי OAuth או מזהי חיבור אישיים.
 
-## Import notes
+## הערות לייבוא
 
-After importing the Blueprint into Make, configure your own:
+לאחר ייבוא ה־Blueprint לתוך Make, יש להגדיר את החיבורים האישיים שלך עבור:
 
 - Custom Webhook
-- OpenAI connection
+- חיבור OpenAI
 - Make Data Store
-- Telegram Bot connection and Chat ID
-- Gmail connection
-- Google Sheets connection and spreadsheet
+- חיבור Telegram Bot ו־Chat ID
+- חיבור Gmail
+- חיבור Google Sheets וה־Spreadsheet המתאים
 
-The repository also contains synthetic sample order data under `sample-data/orders.csv` so the lookup logic can be recreated without exposing a private spreadsheet.
+ה־Repository כולל גם נתוני הזמנות סינתטיים לדוגמה בקובץ `sample-data/orders.csv`, כך שניתן לשחזר את לוגיקת החיפוש בלי לחשוף Spreadsheet פרטי.
 
-The Blueprint is not expected to run immediately after import until these environment-specific connections are configured.
+ה־Blueprint אינו צפוי לפעול מיד לאחר הייבוא עד שהחיבורים הספציפיים לסביבה יוגדרו.
